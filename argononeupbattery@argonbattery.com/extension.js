@@ -29,80 +29,27 @@ const Mainloop = imports.mainloop;
 let batteryLabel, timeout, batteryIcon, chargeStatus;
 let lastPercent = 100;
 
-function getBatteryIcon(batteryPercent){ // gets the name for the correct charge level
+function getBatteryIcon(batteryPercent){
     if (batteryPercent > 95){
-    return 'battery-level-100-symbolic';
-    }
-    else if (batteryPercent > 90){
-    return 'battery-level-90-symbolic';
-    }
-    else if (batteryPercent > 80){
-    return 'battery-level-80-symbolic';
-    }
-    else if (batteryPercent > 70){
-    return 'battery-level-70-symbolic';
-    }
-    else if (batteryPercent > 60){
-    return 'battery-level-60-symbolic';
-    }
-    else if (batteryPercent > 50){
-    return 'battery-level-50-symbolic';
-    }
-    else if (batteryPercent > 40){
-    return 'battery-level-40-symbolic';
-    }
-    else if (batteryPercent > 30){
-    return 'battery-level-30-symbolic';
-    }
-    else if (batteryPercent > 20){
-    return 'battery-level-20-symbolic';
-    }
-    else if (batteryPercent > 10){
-    return 'battery-level-10-symbolic';
+        return 'battery-level-100-symbolic';
     }
     else {
-    return 'battery-level-0-symbolic';
+        return 'battery-level-' + (((batteryPercent / 10) | 0) * 10) + '-symbolic'; // finding the next lowest multiple of 10
     }
 }
+
 
 function getBatteryIconCharging(batteryPercent){ // gets the name for charge level while charging
     if (batteryPercent > 95){
     return 'battery-level-100-charged-symbolic';
     }
-    else if (batteryPercent > 90){
-    return 'battery-level-90-charging-symbolic';
-    }
-    else if (batteryPercent > 80){
-    return 'battery-level-80-charging-symbolic';
-    }
-    else if (batteryPercent > 70){
-    return 'battery-level-70-charging-symbolic';
-    }
-    else if (batteryPercent > 60){
-    return 'battery-level-60-charging-symbolic';
-    }
-    else if (batteryPercent > 50){
-    return 'battery-level-50-charging-symbolic';
-    }
-    else if (batteryPercent > 40){
-    return 'battery-level-40-charging-symbolic';
-    }
-    else if (batteryPercent > 30){
-    return 'battery-level-30-charging-symbolic';
-    }
-    else if (batteryPercent > 20){
-    return 'battery-level-20-charging-symbolic';
-    }
-    else if (batteryPercent > 10){
-    return 'battery-level-10-charging-symbolic';
-    }
     else {
-    return 'battery-level-0-charging-symbolic';
+        return 'battery-level-' + (((batteryPercent / 10) | 0 ) * 10) + '-charging-symbolic'; // finding next lowest multiple of 10
     }
 }
 
 function setBatteryIcon(batteryPercent, chargeStatus){
-    if ((chargeStatus !== 'Charging') && (chargeStatus != 'Charged')){  // if not plugged in, get not charging symbol
+    if ((chargeStatus != 'Charging') && (chargeStatus != 'Charged')){  // if not plugged in, get not charging symbol
         batteryIcon.set_icon_name(getBatteryIcon(batteryPercent));
     }
     else {
@@ -125,8 +72,8 @@ function parseBatteryData(input){ // parses the returned output from the script.
     return { chargeStatus, batteryPercent};
 }
 
-function notifyIfNeeded(batteryPercent){  // sends low battery notification every 5% at or below 20%, lastPercent prevents repeat notifications for the same percentage
-    if ((batteryPercent <= 20) && ((batteryPercent % 5) == 0) && (batteryPercent != lastPercent)){
+function notifyIfNeeded(batteryPercent, chargeStatus){  // sends low battery notification every 5% at or below 20%, lastPercent prevents repeat notifications for the same percentage
+    if ((batteryPercent <= 20) && ((batteryPercent % 5) == 0) && (batteryPercent != lastPercent) && (chargeStatus != 'Charging')){
         Main.notify('Low Battery', 'Battery ' + batteryPercent + '%')
     }
     lastPercent = batteryPercent;
@@ -148,7 +95,7 @@ function setIconAndPercent(extensionPath) {
 
     setBatteryPercent(batteryPercent);  
     setBatteryIcon(batteryPercent, chargeStatus);
-    notifyIfNeeded(batteryPercent);
+    notifyIfNeeded(batteryPercent, chargeStatus);
 
     return true;
     
