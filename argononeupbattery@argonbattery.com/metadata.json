@@ -1,0 +1,8 @@
+{
+  "name": "Argon Battery Monitor",
+  "description": "Shows battery percentage on Argon One Up Laptop",
+  "uuid": "argononeupbattery@argonbattery.com",
+  "shell-version": [
+    "48"
+  ]
+}
